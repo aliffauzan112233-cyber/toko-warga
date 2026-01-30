@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toko Warga</title>
+</head>
+<body>
+    <h1> Toko Warga</h1>
+    <button onclick="toggleCart()">
+        Lihat Keranjang (<span id="count">0</span>)
+    </button>
+    <br><br>
+
+    <div id="cartModal" style="display: none; background: #eee; padding: 20px; border: 1px solid black; margin-bottom: 20px;">
+        <h2>Keranjang Anda</h2>
+        <div id="cartList"></div>
+        <hr>
+
+        <label>Nama Pemesan:</label><br>
+        <input type="text" id="cName" placeholder="Nama Lengkap"><br><br>
+
+        <label>Alamat Pengirim:</label><br>
+        <input type="text" id="cAddr" placeholder="Alamat Lengkap"><br><br>
+
+        <button onclick="checkout()">Beli via WhatsApp</button>
+        <button onclick="toggleCart()">Tutup</button>
+    </div>
+
+    <div id="products">Memuat produk...</div>
+
+    <script>
+        let cart = [];
+        let allProducts = [];
+
+        async function load() {
+            try {
+                const res = await fetch('/api/products');
+                const json = await res.json();
+                // Mengambil data dari json.data seperti di kode kamu
+                allProducts = json.data || []; 
+
+                if (allProducts.length === 0) {
+                    document.getElementById('products').innerHTML = "Produk kosong.";
+                    return;
+                }
+
+                document.getElementById('products').innerHTML = allProducts.map(p => `
+                    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
+                        <img src="${p.imageUrl}" width="150" alt="${p.name}"><br>
+                        <h3>${p.name}</h3>
+                        <p>Harga: Rp ${parseInt(p.price).toLocaleString()}</p>
+                        <button onclick="add(${p.id})">Tambah (+)</button>
+                    </div>
+                `).join('');
+            } catch (err) {
+                document.getElementById('products').innerHTML = "Gagal memuat produk.";
+                console.error(err);
+            }
+        }
+
+        function add(id) {
+            const exist = cart.find(c => c.productId === id);
+            if (exist) {
+                exist.quantity++;
+            } else {
+                cart.push({ productId: id, quantity: 1 });
+            }
+            updateCount();
+        }
+
+        function updateCount() {
+            const totalItems = cart.reduce((a, b) => a + b.quantity, 0);
+            document.getElementById('count').innerText = totalItems;
+        }
+
+        function toggleCart() {
+            const m = document.getElementById('cartModal');
+            if (m.style.display === 'none' || m.style.display === '') {
+                m.style.display = 'block';
+                renderCartList();
+            } else {
+                m.style.display = 'none';
+            }
+        }
+
+        function renderCartList() {
+            if (cart.length === 0) {
+                document.getElementById('cartList').innerHTML = "<p>Keranjang kosong</p>";
+                return;
+            }
+
+            document.getElementById('cartList').innerHTML = cart.map(c => {
+                const p = allProducts.find(x => x.id === c.productId);
+                if (!p) return ''; // Jaga-jaga jika produk tidak ditemukan
+                return `
+                <div style="margin-bottom: 5px;">
+                    <strong>${p.name}</strong> (x${c.quantity}) - Rp ${(p.price * c.quantity).toLocaleString()}
+                </div>`;
+            }).join('');
+        }
+
+        async function checkout() {
+            const name = document.getElementById('cName').value;
+            const addr = document.getElementById('cAddr').value;
+            
+            if (!name || !addr || cart.length === 0) {
+                return alert('Data belum lengkap atau keranjang masih kosong!');
+            }
+
+            try {
+                const res = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ customerName: name, address: addr, items: cart })
+                });
+
+                const data = await res.json();
+
+                if(data.success) {
+                 // Tambahkan "|| 0" agar jika data.total null, dia akan dianggap 0 dan tidak error
+                const totalHarga = (data.total || 0).toLocaleString(); 
+    
+                const msg = `Halo Admin, Order ID #${data.orderId}. Total: Rp ${totalHarga}. Dikirim Ke: ${addr}`;
+    
+                // Pastikan window.location (huruf kecil semua)
+                window.location.href = `https://wa.me/6282326793436?text=${encodeURIComponent(msg)}`;
+}
+            } catch (err) {
+                alert('Terjadi kesalahan koneksi saat checkout.');
+                console.error(err);
+            }
+        }
+
+        // Jalankan fungsi load saat halaman dibuka
+        load();
+    </script>
+</body>
+</html>

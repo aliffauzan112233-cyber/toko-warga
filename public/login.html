@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Admin</title>
+</head>
+<body>
+    <h1></h1>
+    <hr>
+
+    <form id="loginFrom">
+        <label for=Username:></label><br>
+        <input type="text" id="username" placeholder="Masukan Username" required><br><br>
+
+        <label for=Password:></label><br>
+        <input type="text" id="password" placeholder="Masukan Password" required><br><br>
+
+        <button type="submit">Masuk</button>
+    </form>
+
+    <script>
+        document.getElementById('loginFrom').addEventListener('submit', async (e) =>{
+            e.preventDefault();
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    username: document.getElementById('username').value,
+                    password: document.getElementById('password').value
+                })
+            });
+            const data = await res.json();
+
+            if(data.success) {
+                localStorage.setItem('token', data.token);
+                window.location.href = '/admin.html';
+            } else {
+                alert(data.message);
+            }
+        });
+    </script>
+</body>
+</html>
