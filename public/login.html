@@ -1,26 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Admin</title>
+    <title>Login - Toko Warga</title>
 </head>
 <body>
-    <h1></h1>
+    <h1>Login Admin</h1>
     <hr>
-
-    <form id="loginFrom">
-        <label for=Username:></label><br>
-        <input type="text" id="username" placeholder="Masukan Username" required><br><br>
-
-        <label for=Password:></label><br>
-        <input type="text" id="password" placeholder="Masukan Password" required><br><br>
-
+    <form id="loginForm">
+        <input type="text" id="username" placeholder="Username" required><br><br>
+        <input type="password" id="password" placeholder="Password" required><br><br>
         <button type="submit">Masuk</button>
     </form>
 
     <script>
-        document.getElementById('loginFrom').addEventListener('submit', async (e) =>{
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const res = await fetch('/api/login', {
                 method: 'POST',
@@ -33,8 +27,11 @@
             const data = await res.json();
 
             if(data.success) {
+                // Simpan kunci (token)
                 localStorage.setItem('token', data.token);
-                window.location.href = '/admin.html';
+                alert("Login Berhasil!");
+                // Pindah ke halaman toko utama
+                window.location.href = 'index.html'; 
             } else {
                 alert(data.message);
             }
