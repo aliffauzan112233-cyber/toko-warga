@@ -5,18 +5,16 @@ import { cors } from 'hono/cors';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './db/schema.js';
-import { eq, ne } from 'drizzle-orm';
+import { eq, desc } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { createClient } from '@supabase/supabase-js';
-import { desc } from 'drizzle-orm';
 import { serveStatic } from '@hono/node-server/serve-static';
-
 
 // Load ENV
 process.loadEnvFile();
 
-//  Setup koneksi
+// Setup koneksi
 const client = postgres(process.env.DATABASE_URL);
 const db = drizzle(client, { schema });
 const supabase = createClient(
@@ -26,13 +24,43 @@ const supabase = createClient(
 
 const app = new Hono();
 app.use('/*', cors());
-
 app.use('/*', serveStatic({ root: './public' }));
+
+// --- API REGISTER (Daftar Akun Baru) ---
+app.post('/api/register', async (c) => {
+    try {
+        const { username, password } = await c.req.json();
+
+        // 1. Cek apakah username sudah ada
+        const existingUser = await db.query.users.findFirst({
+            where: eq(schema.users.username, username)
+        });
+
+        if (existingUser) {
+            return c.json({ success: false, message: 'Username sudah digunakan' }, 400);
+        }
+
+        // 2. Hash password sebelum simpan
+        const salt = bcrypt.genSaltSync(10);
+        const hashedPassword = bcrypt.hashSync(password, salt);
+
+        // 3. Simpan user baru ke database
+        await db.insert(schema.users).values({
+            username,
+            password: hashedPassword,
+            role: 'admin' // Default sebagai admin sesuai kebutuhan toko
+        });
+
+        return c.json({ success: true, message: 'Registrasi Berhasil! Silakan Login.' });
+    } catch (e) {
+        return c.json({ success: false, message: 'Gagal daftar: ' + e.message }, 500);
+    }
+});
+
 // API Login (Masuk)
 app.post('/api/login', async (c) => {
     const { username, password } = await c.req.json();
 
-    // cari user
     const user = await db.query.users.findFirst({
         where: eq(schema.users.username, username)
     });
@@ -41,20 +69,19 @@ app.post('/api/login', async (c) => {
         return c.json({ success: false, message: 'Login Gagal' }, 401);
     }
 
-    // Buat Token
     const token = jwt.sign(
-    { id: user.id, role: user.role },
-    process.env.JWT_SECRET, 
-    { expiresIn: '1d' } // <--- Pastikan ini '1d' (angka 1 dan huruf d), bukan 'id'
-);
-    return c.json({ success: true, token});
+        { id: user.id, role: user.role },
+        process.env.JWT_SECRET, 
+        { expiresIn: '1d' }
+    );
+    return c.json({ success: true, token });
 });
 
 // Middleware Auth
 const authMiddleware = async (c, nex) => {
     const authHeader = c.req.header('Authorization');
     if (!authHeader) return c.json({ message: 'Unauthorized' }, 401);
-    try{
+    try {
         const token = authHeader.split(' ')[1];
         const payload = jwt.verify(token, process.env.JWT_SECRET);
         c.set('user', payload);
@@ -66,31 +93,26 @@ const authMiddleware = async (c, nex) => {
 
 // API Upload Produk (Admin Only)
 app.post('/api/products', authMiddleware, async (c) => {
-    try{
+    try {
         const body = await c.req.parseBody();
-        const imageFile = body['image']; // Ambil file dari from data
+        const imageFile = body['image'];
 
-        // validasi
         if (!imageFile || !(imageFile instanceof File)) {
             return c.json({ success: false, message: 'Gambar Wajib!' }, 400);
         }
 
-        // 1 upload ke supabase storage
         const fileName = `prod_${Date.now()}_${imageFile.name.replace(/\s/g, '_')}`;
         const arrayBuffer = new Uint8Array(await imageFile.arrayBuffer()); 
 
         const { error: uploadError } = await supabase.storage
-        .from('products')
-        .upload(fileName, arrayBuffer, 
-            { contentType: imageFile.type });
+            .from('products')
+            .upload(fileName, arrayBuffer, { contentType: imageFile.type });
 
         if (uploadError) throw uploadError;
 
-        // 2 Ambil Public URL
         const { data } = supabase.storage.from('products').getPublicUrl(fileName);
         const imageUrl = data.publicUrl;
 
-        // 3 Simpan ke Database
         await db.insert(schema.products).values({
             name: body['name'],
             description: body['description'],
@@ -99,47 +121,42 @@ app.post('/api/products', authMiddleware, async (c) => {
             categoryId: parseInt(body['categoryId']),
             imageUrl: imageUrl
         });
-        return c.json({ success: true, message: 'Produk Tersimpan', imageUrl});
-
+        return c.json({ success: true, message: 'Produk Tersimpan', imageUrl });
     } catch (e) {
         return c.json({ success: false, message: e.message }, 500);
-
     }
 });
 
-// API List Produk (puplic)
+// API List Produk (Public)
 app.get('/api/products', async (c) => {
     const data = await db.select().from(schema.products).orderBy(desc(schema.products.id));
     return c.json({ success: true, data });
-})
+});
 
 // API Checkout (Public)
 app.post('/api/orders', async (c) => {
     const { customerName, address, items } = await c.req.json();
-
-    try{
+    try {
         const result = await db.transaction(async (tx) => {
             let total = 0;
 
-            //1 Buat Order header
-            const [ newOrder ] = await tx.insert(schema.orders).values({
+            const [newOrder] = await tx.insert(schema.orders).values({
                 customerName, address, totalAmount: "0", status: 'pending'
             }).returning();
 
-            //2 Proses Items
             for (const item of items) {
-                //cek stok
                 const product = await tx.query.products.findFirst({
                     where: eq(schema.products.id, item.productId)
                 });
 
                 if (!product || product.stock < item.quantity) {
-                    throw new Error(`Stok ${product?.name} kurang!`);
+                    throw new Error(`Stok ${product?.name || 'Produk'} tidak mencukupi!`);
                 }
 
-                total += (parseFloat(product.price.price) * item.quantity);
+                // Perbaikan: Ambil harga langsung dari product.price
+                const itemPrice = parseFloat(product.price);
+                total += (itemPrice * item.quantity);
 
-                //catatan item & kurangi stok
                 await tx.insert(schema.orderItems).values({
                     orderId: newOrder.id,
                     productId: item.productId,
@@ -148,27 +165,26 @@ app.post('/api/orders', async (c) => {
                 });
 
                 await tx.update(schema.products)
-                .set({ stock: product.stock - item.quantity })
-                .where(eq(schema.products.id, item.productId));
+                    .set({ stock: product.stock - item.quantity })
+                    .where(eq(schema.products.id, item.productId));
             }
 
-            //Update Total Harga
             await tx.update(schema.orders)
-            .set({ totalAmount: total.toString() })
-            .where(eq(schema.orders.id, newOrder.id));
+                .set({ totalAmount: total.toString() })
+                .where(eq(schema.orders.id, newOrder.id));
 
             return { orderId: newOrder.id, total };
         });
 
         return c.json({ success: true, ...result });
-    }catch (e){
-        return c.json({ success: false, message: e.message}, 400);
+    } catch (e) {
+        return c.json({ success: false, message: e.message }, 400);
     }
 });
 
-// code untuk menjalankan server
+
 const port = 3000;
-console.log(`🚀Server runing at http://localhost:${port}`);
+console.log(`🚀 Server running at http://localhost:${port}`);
 serve({ fetch: app.fetch, port });
 
-export default app; // Unruk Vercel
+export default app;

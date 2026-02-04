@@ -1,145 +1,122 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toko Warga</title>
-    <script>
-        // SATPAM: Jika tidak ada token, tendang ke login.html
-        if (!localStorage.getItem('token')) {
-            window.location.href = 'login.html';
-        }
-    </script>
+    <title>Toko Warga - Katalog</title>
+    <style>
+        .product-grid { display: flex; flex-wrap: wrap; gap: 20px; }
+        .card { border: 1px solid #ddd; padding: 15px; width: 200px; text-align: center; }
+        .card img { max-width: 100%; height: 150px; object-fit: cover; }
+        #cartModal { position: fixed; top: 10%; right: 5%; width: 300px; background: white; border: 2px solid #333; padding: 20px; box-shadow: 5px 5px 15px rgba(0,0,0,0.3); }
+    </style>
 </head>
 <body>
-    <h1> Toko Warga</h1>
-    <button onclick="toggleCart()">
-        Lihat Keranjang (<span id="count">0</span>)
-    </button>
-    <br><br>
-
-    <div id="cartModal" style="display: none; background: #eee; padding: 20px; border: 1px solid black; margin-bottom: 20px;">
-        <h2>Keranjang Anda</h2>
-        <div id="cartList"></div>
-        <hr>
-
-        <label>Nama Pemesan:</label><br>
-        <input type="text" id="cName" placeholder="Nama Lengkap"><br><br>
-
-        <label>Alamat Pengirim:</label><br>
-        <input type="text" id="cAddr" placeholder="Alamat Lengkap"><br><br>
-
-        <button onclick="checkout()">Beli via WhatsApp</button>
-        <button onclick="toggleCart()">Tutup</button>
+    <h1>Etalase Toko Warga</h1>
+    <div style="margin-bottom: 20px;">
+        <button onclick="toggleCart()">🛒 Keranjang (<span id="count">0</span>)</button>
+        <a href="admin.html" style="margin-left: 20px;">Kembali ke Admin</a>
+        <button onclick="logout()" style="float: right;">Logout</button>
     </div>
 
-    <div id="products">Memuat produk...</div>
+    <div id="products" class="product-grid">Memuat produk...</div>
+
+    <div id="cartModal" style="display: none;">
+        <h3>Pesanan Anda</h3>
+        <div id="cartList"></div>
+        <hr>
+        <input type="text" id="cName" placeholder="Nama Anda" style="width: 90%; margin-bottom: 5px;"><br>
+        <input type="text" id="cAddr" placeholder="Alamat Lengkap" style="width: 90%; margin-bottom: 10px;"><br>
+        <button onclick="checkout()" style="background: #25D366; color: white; border: none; padding: 10px; width: 100%;">Order via WhatsApp</button>
+        <button onclick="toggleCart()" style="width: 100%; margin-top: 5px;">Tutup</button>
+    </div>
+
 
     <script>
         let cart = [];
         let allProducts = [];
 
-        async function load() {
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'login.html';
+        }
+
+        async function loadProducts() {
             try {
                 const res = await fetch('/api/products');
                 const json = await res.json();
-                // Mengambil data dari json.data seperti di kode kamu
                 allProducts = json.data || []; 
 
+                const container = document.getElementById('products');
                 if (allProducts.length === 0) {
-                    document.getElementById('products').innerHTML = "Produk kosong.";
+                    container.innerHTML = "Belum ada produk. Silakan tambah di halaman admin.";
                     return;
                 }
 
-                document.getElementById('products').innerHTML = allProducts.map(p => `
-                    <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;">
-                        <img src="${p.imageUrl}" width="150" alt="${p.name}"><br>
+                container.innerHTML = allProducts.map(p => `
+                    <div class="card">
+                        <img src="${p.imageUrl}" alt="${p.name}">
                         <h3>${p.name}</h3>
-                        <p>Harga: Rp ${parseInt(p.price).toLocaleString()}</p>
-                        <button onclick="add(${p.id})">Tambah (+)</button>
+                        <p>Rp ${parseInt(p.price).toLocaleString()}</p>
+                        <button onclick="addToCart(${p.id})">Tambah Ke Keranjang</button>
                     </div>
                 `).join('');
             } catch (err) {
                 document.getElementById('products').innerHTML = "Gagal memuat produk.";
-                console.error(err);
+                
             }
         }
 
-        function add(id) {
-            const exist = cart.find(c => c.productId === id);
-            if (exist) {
-                exist.quantity++;
-            } else {
-                cart.push({ productId: id, quantity: 1 });
-            }
-            updateCount();
+        function addToCart(id) {
+            const item = cart.find(c => c.productId === id);
+            if (item) item.quantity++;
+            else cart.push({ productId: id, quantity: 1 });
+            updateCartUI();
         }
 
-        function updateCount() {
-            const totalItems = cart.reduce((a, b) => a + b.quantity, 0);
-            document.getElementById('count').innerText = totalItems;
+        function updateCartUI() {
+            const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('count').innerText = total;
         }
 
         function toggleCart() {
             const m = document.getElementById('cartModal');
-            if (m.style.display === 'none' || m.style.display === '') {
-                m.style.display = 'block';
-                renderCartList();
-            } else {
-                m.style.display = 'none';
-            }
+            m.style.display = (m.style.display === 'none') ? 'block' : 'none';
+            renderCartItems();
         }
 
-        function renderCartList() {
-            if (cart.length === 0) {
-                document.getElementById('cartList').innerHTML = "<p>Keranjang kosong</p>";
-                return;
-            }
+        function renderCartItems() {
+            const list = document.getElementById('cartList');
+            if (cart.length === 0) { list.innerHTML = "Kosong"; return; }
 
-            document.getElementById('cartList').innerHTML = cart.map(c => {
+            list.innerHTML = cart.map(c => {
                 const p = allProducts.find(x => x.id === c.productId);
-                if (!p) return ''; // Jaga-jaga jika produk tidak ditemukan
-                return `
-                <div style="margin-bottom: 5px;">
-                    <strong>${p.name}</strong> (x${c.quantity}) - Rp ${(p.price * c.quantity).toLocaleString()}
-                </div>`;
+                return `<div>${p.name} x${c.quantity}</div>`;
             }).join('');
         }
 
         async function checkout() {
             const name = document.getElementById('cName').value;
             const addr = document.getElementById('cAddr').value;
-            
-            if (!name || !addr || cart.length === 0) {
-                return alert('Data belum lengkap atau keranjang masih kosong!');
-            }
+            if(!name || !addr || cart.length === 0) return alert("Lengkapi data!");
 
             try {
                 const res = await fetch('/api/orders', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ customerName: name, address: addr, items: cart })
+                
                 });
 
                 const data = await res.json();
 
                 if(data.success) {
-                 // Tambahkan "|| 0" agar jika data.total null, dia akan dianggap 0 dan tidak error
-                const totalHarga = (data.total || 0).toLocaleString(); 
-    
-                const msg = `Halo Admin, Order ID #${data.orderId}. Total: Rp ${totalHarga}. Dikirim Ke: ${addr}`;
-    
-                // Pastikan window.location (huruf kecil semua)
-                window.location.href = `https://wa.me/6282326793436?text=${encodeURIComponent(msg)}`;
-}
-            } catch (err) {
-                alert('Terjadi kesalahan koneksi saat checkout.');
-                console.error(err);
-            }
+                    const msg = `Order #${data.orderId} atas nama ${name}. Alamat: ${addr}.`;
+                    window.location.href = `https://wa.me/6282326793436?text=${encodeURIComponent(msg)}`;
+                }
+            } catch (err) { alert("Gagal checkout"); }
         }
 
-        // Jalankan fungsi load saat halaman dibuka
-        load();
+        loadProducts();
     </script>
 </body>
 </html>

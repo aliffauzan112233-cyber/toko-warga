@@ -3,39 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <title>Login - Toko Warga</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; padding-top: 50px; }
+        .login-card { border: 1px solid #ccc; padding: 20px; border-radius: 8px; width: 300px; }
+        .error { color: red; font-size: 14px; margin-bottom: 10px; display: none; }
+        input { width: 90%; padding: 8px; margin-bottom: 10px; }
+        button { width: 100%; padding: 10px; cursor: pointer; background: #28a745; color: white; border: none; }
+        .footer-text { margin-top: 15px; font-size: 13px; text-align: center; }
+    </style>
 </head>
 <body>
-    <h1>Login Admin</h1>
-    <hr>
-    <form id="loginForm">
-        <input type="text" id="username" placeholder="Username" required><br><br>
-        <input type="password" id="password" placeholder="Password" required><br><br>
-        <button type="submit">Masuk</button>
-    </form>
+    <div class="login-card">
+        <h1>Login Admin</h1>
+        <div id="errorMessage" class="error"></div>
+        
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Username" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit" id="loginBtn">Masuk</button>
+        </form>
+
+        <p class="footer-text">
+            Belum punya akun? <a href="register.html">Daftar di sini</a>
+        </p>
+    </div>
 
     <script>
+        // Cek jika sudah login otomatis lempar ke admin
+        if (localStorage.getItem('token')) {
+            window.location.href = 'admin.html';
+        }
+
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const res = await fetch('/api/login', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    username: document.getElementById('username').value,
-                    password: document.getElementById('password').value
-                })
-            });
-            const data = await res.json();
+            const btn = document.getElementById('loginBtn');
+            const errorDiv = document.getElementById('errorMessage');
+            
+            btn.disabled = true;
+            btn.innerText = "Proses...";
 
-            if(data.success) {
-                // Simpan kunci (token)
-                localStorage.setItem('token', data.token);
-                alert("Login Berhasil!");
-                // Pindah ke halaman toko utama
-                window.location.href = 'index.html'; 
-            } else {
-                alert(data.message);
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        username: document.getElementById('username').value,
+                        password: document.getElementById('password').value
+                    })
+                });
+                
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    localStorage.setItem('token', data.token);
+                    alert("Login Berhasil!");
+                    window.location.href = 'admin.html';
+                } else {
+                    errorDiv.style.display = 'block';
+                    errorDiv.innerText = data.message || "Gagal Login";
+                }
+            } catch (err) {
+                alert("Server tidak merespon!");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Masuk";
             }
         });
+        // API Register (Daftar Akun Baru)
+app.post('/api/register', async (c) => {
+    try {
+        const { username, password } = await c.req.json();
+
+        // 1. Cek apakah username sudah dipakai
+        const existingUser = await db.query.users.findFirst({
+            where: eq(schema.users.username, username)
+        });
+
+        if (existingUser) {
+            return c.json({ success: false, message: 'Username sudah digunakan' }, 400);
+        }
+
+        // 2. Hash Password agar aman
+        const salt = bcrypt.genSaltSync(10);
+        const hashedPassword = bcrypt.hashSync(password, salt);
+
+        // 3. Simpan ke Database
+        // Pastikan di schema.js kamu punya field: username, password, dan role
+        await db.insert(schema.users).values({
+            username: username,
+            password: hashedPassword,
+            role: 'admin' // default sebagai admin agar bisa login
+        });
+
+        return c.json({ success: true, message: 'Registrasi Berhasil!' });
+
+    } catch (e) {
+        return c.json({ success: false, message: 'Terjadi kesalahan: ' + e.message }, 500);
+    }
+});
     </script>
 </body>
 </html>

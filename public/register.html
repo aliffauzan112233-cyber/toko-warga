@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daftar Akun - Toko Warga</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- <style>
+    body { font-family: 'Poppins', sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+    .register-box { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 350px; }
+    .brand-title { color: #2d3436; margin-bottom: 5px; text-align: center; }
+    .subtitle { color: #636e72; font-size: 14px; text-align: center; margin-bottom: 25px; }
+    .input-group { margin-bottom: 15px; }
+    .input-wrapper { position: relative; display: flex; align-items: center; }
+    .input-wrapper i { position: absolute; left: 12px; color: #b2bec3; }
+    .input-wrapper input { width: 100%; padding: 10px 10px 10px 35px; border: 1px solid #dfe6e9; border-radius: 8px; outline: none; }
+    button { width: 100%; padding: 12px; background: #0984e3; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s; }
+    button:hover { background: #74b9ff; }
+    .footer-text { text-align: center; margin-top: 20px; font-size: 13px; }
+    #notif { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 5px; color: white; transition: 0.5s; z-index: 1000; }
+  </style> -->
+</head>
+<body>
+
+  <div id="notif"></div>
+
+  <div class="register-box">
+    <h1 class="brand-title">Toko Warga</h1>
+    <p class="subtitle">Buat akun admin untuk mulai mengelola</p>
+
+    <div class="input-group">
+      <label>Username</label>
+      <div class="input-wrapper">
+        <i class="fa-solid fa-user-plus"></i>
+        <input id="username" type="text" placeholder="Pilih username" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>Password</label>
+      <div class="input-wrapper">
+        <i class="fa-solid fa-key"></i>
+        <input id="password" type="password" placeholder="Minimal 6 karakter">
+      </div>
+    </div>
+
+    <button onclick="registerUser()" id="regBtn">Daftar Sekarang</button>
+
+    <p class="footer-text">
+      Sudah punya akun? <a href="login.html">Masuk di sini</a>
+    </p>
+  </div>
+
+  <script>
+    function showNotif(text, type = "success") {
+      const box = document.getElementById("notif");
+      box.innerHTML = text;
+      box.style.background = type === "success" ? "#10b981" : "#ef4444";
+      box.style.top = "30px";
+      setTimeout(() => box.style.top = "-100px", 3000);
+    }
+
+    async function registerUser() {
+      const user = document.getElementById("username").value;
+      const pass = document.getElementById("password").value;
+      const btn = document.getElementById("regBtn");
+
+      if (!user || !pass) return showNotif("Data tidak boleh kosong!", "error");
+      if (pass.length < 6) return showNotif("Password minimal 6 karakter!", "error");
+
+      btn.disabled = true;
+      btn.innerText = "Mendaftarkan...";
+
+      try {
+        const res = await fetch("/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: user, password: pass })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          showNotif("Akun berhasil dibuat! Silakan login.");
+          setTimeout(() => location.href = "login.html", 1500);
+        } else {
+          showNotif(data.message || "Registrasi gagal", "error");
+          btn.disabled = false;
+          btn.innerText = "Daftar Sekarang";
+        }
+      } catch (err) {
+        showNotif("Server tidak merespon", "error");
+        btn.disabled = false;
+        btn.innerText = "Daftar Sekarang";
+      }
+    }
+</script>
+</body>
+</html>
