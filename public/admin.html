@@ -2,39 +2,275 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Admin - Tambah Produk</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - TJStore</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-dim: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.05) 0px, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        /* Dekorasi Background */
+        .shape {
+            position: fixed;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.3;
+        }
+        .shape-1 { width: 400px; height: 400px; background: var(--primary); top: -100px; left: -100px; }
+        .shape-2 { width: 300px; height: 300px; background: var(--secondary); bottom: -100px; right: -100px; }
+
+        .admin-container {
+            width: 100%;
+            max-width: 650px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .admin-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+        }
+
+        .header-section { 
+            margin-bottom: 30px; 
+            text-align: center; 
+        }
+
+        .brand-name {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+
+        .subtitle { color: var(--text-dim); font-size: 0.95rem; margin-top: 5px; }
+
+        /* Grid Layout untuk Form */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .full-width { grid-column: span 2; }
+
+        .input-group { margin-bottom: 5px; }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            margin-left: 5px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-box { position: relative; }
+
+        .input-box input, .input-box select {
+            width: 100%;
+            background: white;
+            border: 1.5px solid #e2e8f0;
+            padding: 15px 15px 15px 45px;
+            border-radius: 16px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            transition: 0.3s;
+            outline: none;
+        }
+
+        .input-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        .input-box input:focus, .input-box select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        /* File Upload */
+        input[type="file"] {
+            padding: 10px 10px 10px 45px;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+
+        #saveBtn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary), #6366f1);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 25px;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #saveBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .view-store {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 20px;
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .view-store:hover { color: var(--primary); }
+
+        /* Toast Notification */
+        #toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: var(--text-main);
+            padding: 16px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            border-left: 4px solid #10b981;
+            transform: translateX(150%);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 9999;
+        }
+
+        @media (max-width: 550px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+        }
+    </style>
 </head>
 <body>
-    <h1>Halaman Admin</h1>
-    <p>Tambah Produk Baru ke Toko</p>
-    <hr>
 
-    <form id="productForm">
-        <label>Nama Produk:</label><br>
-        <input type="text" id="name" required><br><br>
-        
-        <label>Harga:</label><br>
-        <input type="number" id="price" required><br><br>
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
 
-        <label>Stok:</label><br>
-        <input type="number" id="stock" required><br><br>
+    <div id="toast">Produk Berhasil Ditambah!</div>
 
-        <label>Kategori:</label><br>
-        <select id="category">
-            <option value="1">Makanan</option>
-            <option value="2">Minuman</option>
-            <option value="3">Pakaian</option>
-        </select><br><br>
+    <div class="admin-container">
+        <div class="admin-card">
+            <div class="header-section">
+                <h1 class="brand-name">Inventory System</h1>
+                <p class="subtitle">Manajemen stok dan publikasi produk baru</p>
+            </div>
 
-        <label>Gambar Produk:</label><br>
-        <input type="file" id="image" accept="image/*" required><br><br>
+            <form id="productForm">
+                <div class="form-grid">
+                    <div class="input-group full-width">
+                        <label class="input-label">Nama Produk</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-box-open"></i>
+                            <input type="text" id="name" placeholder="Contoh: Kopi Warga Premium" required>
+                        </div>
+                    </div>
 
-        <button type="submit">Simpan & Tayangkan</button>
-    </form>
+                    <div class="input-group">
+                        <label class="input-label">Harga (IDR)</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-tags"></i>
+                            <input type="number" id="price" placeholder="0" required>
+                        </div>
+                    </div>
 
-    <br>
-    <div style="background: #f0f0f0; padding: 10px;">
-        <a href="index.html"><strong>LIHAT HASIL DI HALAMAN TOKO >></strong></a>
+                    <div class="input-group">
+                        <label class="input-label">Stok Barang</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <input type="number" id="stock" placeholder="0" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label class="input-label">Kategori Produk</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-list"></i>
+                            <select id="category">
+                                <option value="1">Makanan</option>
+                                <option value="2">Minuman</option>
+                                <option value="3">Pakaian</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group full-width">
+                        <label class="input-label">Gambar Produk</label>
+                        <div class="input-box">
+                            <i class="fa-solid fa-image" style="z-index: 1;"></i>
+                            <input type="file" id="image" accept="image/*" required>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="saveBtn">PUBLIKASIKAN PRODUK</button>
+            </form>
+
+            <a href="index.html" class="view-store">
+                <i class="fa-solid fa-arrow-left"></i> Kembali ke Toko
+            </a>
+        </div>
     </div>
 
     <script>
@@ -44,8 +280,20 @@
             window.location.href = 'login.html';
         }
 
+        function showToast(msg, isError = false) {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.style.borderLeftColor = isError ? '#ef4444' : '#10b981';
+            t.style.transform = 'translateX(0)';
+            setTimeout(() => { t.style.transform = 'translateX(150%)'; }, 3000);
+        }
+
         document.getElementById('productForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            const btn = document.getElementById('saveBtn');
+            btn.disabled = true;
+            btn.innerText = "SEDANG MENGUPLOAD...";
+
             const formData = new FormData();
             formData.append('name', document.getElementById('name').value);
             formData.append('price', document.getElementById('price').value);
@@ -62,13 +310,16 @@
                 const data = await res.json();
                 
                 if(data.success) {
-                    alert("Produk berhasil ditambah!");
-                    location.reload();
+                    showToast("PRODUK BERHASIL DITAMBAHKAN!");
+                    document.getElementById('productForm').reset();
                 } else {
-                    alert("Gagal: " + data.message);
+                    showToast("GAGAL: " + data.message, true);
                 }
             } catch (err) {
-                alert("Error saat simpan produk");
+                showToast("ERROR KONEKSI SERVER", true);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "PUBLIKASIKAN PRODUK";
             }
         });
     </script>

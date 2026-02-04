@@ -1,100 +1,302 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Daftar Akun - Toko Warga</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- <style>
-    body { font-family: 'Poppins', sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-    .register-box { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 350px; }
-    .brand-title { color: #2d3436; margin-bottom: 5px; text-align: center; }
-    .subtitle { color: #636e72; font-size: 14px; text-align: center; margin-bottom: 25px; }
-    .input-group { margin-bottom: 15px; }
-    .input-wrapper { position: relative; display: flex; align-items: center; }
-    .input-wrapper i { position: absolute; left: 12px; color: #b2bec3; }
-    .input-wrapper input { width: 100%; padding: 10px 10px 10px 35px; border: 1px solid #dfe6e9; border-radius: 8px; outline: none; }
-    button { width: 100%; padding: 12px; background: #0984e3; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; transition: 0.3s; }
-    button:hover { background: #74b9ff; }
-    .footer-text { text-align: center; margin-top: 20px; font-size: 13px; }
-    #notif { position: fixed; top: -100px; left: 50%; transform: translateX(-50%); padding: 10px 20px; border-radius: 5px; color: white; transition: 0.5s; z-index: 1000; }
-  </style> -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account - Toko Warga</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #ec4899;
+            --bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-dim: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(79, 70, 229, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.05) 0px, transparent 50%);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Dekorasi Lingkaran Lembut di Background */
+        .shape {
+            position: absolute;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.4;
+        }
+        .shape-1 { width: 300px; height: 300px; background: var(--primary); top: -50px; left: -50px; }
+        .shape-2 { width: 250px; height: 250px; background: var(--secondary); bottom: -50px; right: -50px; }
+
+        .register-container {
+            width: 100%;
+            max-width: 420px;
+            padding: 20px;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .register-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 40px;
+            border-radius: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+        }
+
+        .header-section { 
+            margin-bottom: 35px; 
+            text-align: center; 
+        }
+
+        .brand-name {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .subtitle { 
+            color: var(--text-dim); 
+            font-size: 0.95rem; 
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-label {
+            display: block;
+            margin-bottom: 8px;
+            margin-left: 5px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .input-box {
+            position: relative;
+        }
+
+        .input-box input {
+            width: 100%;
+            background: white;
+            border: 1.5px solid #e2e8f0;
+            padding: 15px 15px 15px 50px;
+            border-radius: 16px;
+            color: var(--text-main);
+            font-size: 1rem;
+            transition: 0.3s;
+            outline: none;
+        }
+
+        .input-box i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            transition: 0.3s;
+        }
+
+        .input-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        .input-box input:focus + i { 
+            color: var(--primary); 
+        }
+
+        #regBtn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary), #6366f1);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 15px;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+        }
+
+        #regBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.4);
+            filter: brightness(1.1);
+        }
+
+        #regBtn:disabled {
+            background: #cbd5e1;
+            transform: none;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .footer-links {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        .footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 700;
+            transition: 0.3s;
+        }
+
+        .footer-links a:hover { 
+            text-decoration: underline;
+        }
+
+        /* Toast Notification */
+        #toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: var(--text-main);
+            padding: 16px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            border-left: 4px solid var(--primary);
+            transform: translateX(150%);
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 1000;
+        }
+
+        .toast-success { border-left-color: #10b981 !important; }
+        .toast-error { border-left-color: #ef4444 !important; }
+
+    </style>
 </head>
 <body>
 
-  <div id="notif"></div>
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
 
-  <div class="register-box">
-    <h1 class="brand-title">Toko Warga</h1>
-    <p class="subtitle">Buat akun admin untuk mulai mengelola</p>
-
-    <div class="input-group">
-      <label>Username</label>
-      <div class="input-wrapper">
-        <i class="fa-solid fa-user-plus"></i>
-        <input id="username" type="text" placeholder="Pilih username" autocomplete="off">
-      </div>
+    <div id="toast">
+        <i id="toastIcon" class="fa-solid fa-circle-info"></i>
+        <span id="toastMsg">Notification</span>
     </div>
 
-    <div class="input-group">
-      <label>Password</label>
-      <div class="input-wrapper">
-        <i class="fa-solid fa-key"></i>
-        <input id="password" type="password" placeholder="Minimal 6 karakter">
-      </div>
+    <div class="register-container">
+        <div class="register-card">
+            <div class="header-section">
+                <h1 class="brand-name">Sign Up</h1>
+                <p class="subtitle">Enter your details to create an account</p>
+            </div>
+
+            <form id="registerForm">
+                <div class="input-group">
+                    <label class="input-label">Username</label>
+                    <div class="input-box">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" id="username" placeholder="Choose a username" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Password</label>
+                    <div class="input-box">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="password" placeholder="Create a password" required>
+                    </div>
+                </div>
+
+                <button type="submit" id="regBtn">Create Account</button>
+            </form>
+
+            <div class="footer-links">
+                Already have an account? <a href="login.html">Log In</a>
+            </div>
+        </div>
     </div>
 
-    <button onclick="registerUser()" id="regBtn">Daftar Sekarang</button>
+    <script>
+        function showToast(msg, type = 'error') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            document.getElementById('toastMsg').innerText = msg;
+            
+            toast.className = type === 'success' ? 'toast-success' : 'toast-error';
+            icon.className = type === 'success' ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-exclamation';
+            icon.style.color = type === 'success' ? '#10b981' : '#ef4444';
 
-    <p class="footer-text">
-      Sudah punya akun? <a href="login.html">Masuk di sini</a>
-    </p>
-  </div>
-
-  <script>
-    function showNotif(text, type = "success") {
-      const box = document.getElementById("notif");
-      box.innerHTML = text;
-      box.style.background = type === "success" ? "#10b981" : "#ef4444";
-      box.style.top = "30px";
-      setTimeout(() => box.style.top = "-100px", 3000);
-    }
-
-    async function registerUser() {
-      const user = document.getElementById("username").value;
-      const pass = document.getElementById("password").value;
-      const btn = document.getElementById("regBtn");
-
-      if (!user || !pass) return showNotif("Data tidak boleh kosong!", "error");
-      if (pass.length < 6) return showNotif("Password minimal 6 karakter!", "error");
-
-      btn.disabled = true;
-      btn.innerText = "Mendaftarkan...";
-
-      try {
-        const res = await fetch("/api/register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username: user, password: pass })
-        });
-
-        const data = await res.json();
-
-        if (data.success) {
-          showNotif("Akun berhasil dibuat! Silakan login.");
-          setTimeout(() => location.href = "login.html", 1500);
-        } else {
-          showNotif(data.message || "Registrasi gagal", "error");
-          btn.disabled = false;
-          btn.innerText = "Daftar Sekarang";
+            toast.style.transform = 'translateX(0)';
+            setTimeout(() => {
+                toast.style.transform = 'translateX(150%)';
+            }, 3000);
         }
-      } catch (err) {
-        showNotif("Server tidak merespon", "error");
-        btn.disabled = false;
-        btn.innerText = "Daftar Sekarang";
-      }
-    }
-</script>
+
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('regBtn');
+            btn.disabled = true;
+            btn.innerText = "Creating Account...";
+
+            try {
+                const res = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        username: document.getElementById('username').value,
+                        password: document.getElementById('password').value
+                    })
+                });
+                
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    showToast("Account created successfully!", 'success');
+                    setTimeout(() => window.location.href = 'login.html', 1500);
+                } else {
+                    showToast(data.message || "Failed to register");
+                }
+            } catch (err) {
+                showToast("Connection failed. Try again.");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Create Account";
+            }
+        });
+    </script>
 </body>
 </html>
