@@ -16,6 +16,7 @@
             --text-dim: #64748b;
             --white: #ffffff;
             --success: #10b981;
+            --error: #ef4444;
         }
 
         * {
@@ -191,28 +192,42 @@
         }
         .view-store:hover { color: var(--primary); }
 
-        /* Toast Modern */
+        /* --- MODERN TOAST NOTIFICATION --- */
         #toast {
             position: fixed;
-            top: -100px;
-            left: 50%;
-            transform: translateX(-50%);
+            top: 20px;
+            right: -400px; /* Sembunyi di kanan luar */
+            display: flex;
+            align-items: center;
+            gap: 12px;
             background: #1e293b;
             color: white;
-            padding: 14px 28px;
-            border-radius: 100px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 16px 24px;
+            border-radius: 20px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
             z-index: 9999;
-            transition: 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             font-weight: 600;
+            border-left: 6px solid var(--success);
         }
-        #toast.show { top: 30px; }
+        #toast.show { right: 20px; }
+        #toast i { font-size: 1.2rem; }
 
         @media (max-width: 600px) {
             .form-grid { grid-template-columns: 1fr; }
             .full-width { grid-column: span 1; }
             .admin-card { padding: 30px 20px; }
+            #toast { left: 20px; right: 20px; transform: translateY(-150%); transition: 0.4s; }
+            #toast.show { transform: translateY(0); right: 20px; }
         }
+        select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg fill='gray' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        background-size: 18px;
+        }
+
     </style>
 </head>
 <body>
@@ -220,7 +235,10 @@
     <div class="blob" style="top: -10%; left: -10%;"></div>
     <div class="blob" style="bottom: -10%; right: -10%;"></div>
 
-    <div id="toast">Produk Berhasil Ditambah!</div>
+    <div id="toast">
+        <i id="toastIcon" class="fa-solid fa-circle-check"></i>
+        <span id="toastMsg">Produk Berhasil Ditambah!</span>
+    </div>
 
     <div class="admin-container">
         <div class="admin-card">
@@ -255,18 +273,20 @@
                         </div>
                     </div>
 
-                    <div class="input-group full-width">
-                        <label class="input-label">Kategori</label>
-                        <div class="input-box">
-                            <i class="fa-solid fa-grip"></i>
-                            <select id="category">
-                                <option value="1">Elektronik</option>
-                                <option value="2">Fashion</option>
-                                <option value="3">Makanan & Minuman</option>
-                                <option value="4">Lainnya</option>
-                            </select>
-                        </div>
-                    </div>
+                <div class="input-group full-width">
+    <label class="input-label">Kategori Produk</label>
+    <div class="input-box">
+        <i class="fa-solid fa-layer-group"></i>
+        <select id="category" required>
+    <option value="">-- Pilih Kategori --</option>
+    <option value="1">🍔 Makanan</option>
+    <option value="2">🥤 Minuman</option>
+    <option value="3">👕 Pakaian</option>
+        </select>
+
+    </div>
+</div>
+
 
                     <div class="input-group full-width">
                         <label class="input-label">Foto Produk</label>
@@ -315,10 +335,23 @@
 
         function showToast(msg, isError = false) {
             const t = document.getElementById('toast');
-            t.innerText = msg;
-            t.style.background = isError ? '#ef4444' : '#1e293b';
+            const icon = document.getElementById('toastIcon');
+            const msgSpan = document.getElementById('toastMsg');
+
+            msgSpan.innerText = msg;
+            
+            if(isError) {
+                t.style.borderLeftColor = 'var(--error)';
+                icon.className = 'fa-solid fa-circle-exclamation';
+                icon.style.color = 'var(--error)';
+            } else {
+                t.style.borderLeftColor = 'var(--success)';
+                icon.className = 'fa-solid fa-circle-check';
+                icon.style.color = 'var(--success)';
+            }
+
             t.classList.add('show');
-            setTimeout(() => { t.classList.remove('show'); }, 3000);
+            setTimeout(() => { t.classList.remove('show'); }, 4000);
         }
 
         document.getElementById('productForm').addEventListener('submit', async (e) => {
@@ -345,15 +378,15 @@
                 const data = await res.json();
                 
                 if(data.success) {
-                    showToast("BERHASIL: Produk kini tayang!");
+                    showToast("Produk berhasil tayang di katalog!");
                     document.getElementById('productForm').reset();
                     imagePreview.style.display = 'none';
                     fileStatus.innerText = "Klik untuk pilih gambar";
                 } else {
-                    showToast("GAGAL: " + data.message, true);
+                    showToast("Gagal: " + data.message, true);
                 }
             } catch (err) {
-                showToast("ERROR: Koneksi ke server terputus", true);
+                showToast("Error: Koneksi ke server terputus", true);
             } finally {
                 btn.disabled = false;
                 btn.innerText = originalText;
