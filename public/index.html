@@ -25,6 +25,34 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
         body { background-color: var(--bg); color: var(--text-main); min-height: 100vh; overflow-x: hidden; }
 
+        /* --- HERO BANNER STYLE --- */
+        .hero-banner {
+            width: 100%;
+            max-height: 400px;
+            overflow: hidden;
+            margin-bottom: 30px;
+            border-radius: 0 0 30px 30px;
+            box-shadow: var(--shadow);
+            position: relative;
+            background: #e2e8f0;
+        }
+        .hero-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.5s ease-in-out;
+        }
+        /* Overlay text agar lebih keren */
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+            display: flex;
+            align-items: flex-end;
+            padding: 40px 8%;
+            color: white;
+        }
+
         /* --- ANIMASI FLY TO CART --- */
         .fly-item {
             position: fixed; width: 30px; height: 30px; background: var(--primary);
@@ -93,95 +121,86 @@
         .section-header h2 { font-size: 2rem; font-weight: 800; }
         .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 25px; }
 
-        /* --- UPDATED CARD ANIMATION --- */
-.card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 24px; /* Lebih bulat agar terlihat modern */
-    padding: 14px;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* Transisi lebih halus */
-    position: relative;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
-    overflow: hidden;
-    cursor: pointer;
-}
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 24px; 
+            padding: 14px;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
+            position: relative;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+            cursor: pointer;
+        }
 
-.card:hover {
-    transform: translateY(-15px); /* Melayang lebih tinggi */
-    box-shadow: 0 25px 40px -10px rgba(0, 0, 0, 0.1); /* Bayangan lebih dalam */
-    border-color: var(--primary);
-    background: #ffffff;
-}
+        .card:hover {
+            transform: translateY(-15px); 
+            box-shadow: 0 25px 40px -10px rgba(0, 0, 0, 0.1); 
+            border-color: var(--primary);
+            background: #ffffff;
+        }
 
-/* Animasi Zoom pada Gambar */
-.card img {
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    border-radius: 18px;
-    margin-bottom: 12px;
-    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
+        .card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 18px;
+            margin-bottom: 12px;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-.card:hover img {
-    transform: scale(1.08); /* Gambar sedikit membesar saat hover */
-}
+        .card:hover img {
+            transform: scale(1.08); 
+        }
 
-/* Animasi Tombol Tambah agar muncul lebih smooth */
-.btn-add {
-    width: 100%;
-    padding: 12px;
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    font-weight: 700;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
+        .btn-add {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
 
-.btn-add:hover {
-    background: #1d4ed8; /* Biru lebih gelap saat diklik */
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
-    transform: scale(1.02);
-}
+        .btn-add:hover {
+            background: #1d4ed8; 
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+            transform: scale(1.02);
+        }
 
-.btn-add:active {
-    transform: scale(0.95); /* Efek tekan saat diklik */
-}
-        .card img { width: 100%; height: 220px; object-fit: cover; border-radius: 15px; margin-bottom: 12px; transition: 0.5s; }
-        
+        .btn-add:active {
+            transform: scale(0.95); 
+        }
+
         .card-info .category-tag { 
             font-size: 0.75rem; text-transform: uppercase; color: var(--primary); background: var(--primary-soft);
             padding: 4px 10px; border-radius: 6px; font-weight: 700; display: inline-block; margin-bottom: 8px;
         }
         .card-info h4 { 
-    font-size: 1.05rem; 
-    font-weight: 600; 
-    color: var(--text-main); 
-    margin-bottom: 6px; 
-    
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-
-    /* Tambahkan ini agar warning hilang */
-    -webkit-line-clamp: 2; 
-    line-clamp: 2; 
-
-    line-height: 1.3; 
-    min-height: 2.6em; 
-}
+            font-size: 1.05rem; 
+            font-weight: 600; 
+            color: var(--text-main); 
+            margin-bottom: 6px; 
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            -webkit-line-clamp: 2; 
+            line-clamp: 2; 
+            line-height: 1.3; 
+            min-height: 2.6em; 
+        }
         .stats-row { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 10px; border-top: 1px solid #f1f5f9; padding-top: 8px; }
         .rating-wrapper { display: flex; align-items: center; gap: 4px; border-right: 1px solid var(--border); padding-right: 8px; }
         .rating-num { font-weight: 700; color: var(--text-main); }
         .stars { color: var(--star-color); font-size: 0.7rem; }
         .price { color: var(--primary); font-weight: 800; font-size: 1.3rem; display: block; margin: 12px 0; }
-        .btn-add { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 12px; cursor: pointer; font-weight: 700; transition: 0.3s; }
 
-        /* --- MODAL KERANJANG BARU (SMOOTH ANIMATION) --- */
+        /* --- MODAL KERANJANG --- */
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(15, 23, 42, 0);
             backdrop-filter: blur(0px); display: none; justify-content: center;
@@ -242,6 +261,7 @@
         @media (max-width: 768px) {
             nav { padding: 15px 5%; flex-direction: column; gap: 15px; }
             .search-section { width: 100%; margin: 0; }
+            .hero-banner { max-height: 250px; }
         }
     </style>
 </head>
@@ -284,6 +304,16 @@
         </div>
     </nav>
 
+    <div class="hero-banner" id="heroSection">
+        <img id="heroImage" src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1500&q=80" alt="Banner">
+        <div class="hero-overlay">
+            <div>
+                <h1 id="heroTitle" style="font-size: 2.5rem; font-weight: 800;">Selamat Datang di TjStore</h1>
+                <p id="heroSubtitle">Temukan koleksi produk premium terbaik kami.</p>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <div class="section-header">
             <h2 id="categoryTitle">Semua Produk</h2>
@@ -325,6 +355,30 @@
 
     const categoryMap = { "1": "Makanan", "2": "Minuman", "3": "Pakaian" };
 
+    // Konfigurasi Banner per Kategori
+    const banners = {
+        all: {
+            img: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1500&q=80",
+            title: "TjStore Premium",
+            sub: "Pusat perbelanjaan online terpercaya dan berkualitas."
+        },
+        makanan: {
+            img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1500&q=80",
+            title: "Kuliner Lezat",
+            sub: "Nikmati berbagai hidangan makanan pilihan dengan rasa otentik."
+        },
+        minuman: {
+            img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS23TgB3usQ2_IdbjR0EuQSruVPLnrLgM6IGQ&s",
+            title: "Segarkan Harimu",
+            sub: "Koleksi minuman segar dan sehat untuk menemani aktivitasmu."
+        },
+        pakaian: {
+            img: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=1500&q=80",
+            title: "Fashion Terkini",
+            sub: "Tampil percaya diri dengan gaya pakaian modern dan material premium."
+        }
+    };
+
     function getRandomStats() {
         const ratings = ["4.7", "4.8", "4.9", "5.0"];
         const rev = ["500", "1,2RB", "800", "2,5RB", "300"];
@@ -353,6 +407,18 @@
         document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
         el.classList.add('active');
         document.getElementById('categoryTitle').innerText = el.innerText;
+        
+        // Update Banner
+        const info = banners[currentCategory] || banners.all;
+        const imgEl = document.getElementById('heroImage');
+        imgEl.style.opacity = '0';
+        setTimeout(() => {
+            imgEl.src = info.img;
+            document.getElementById('heroTitle').innerText = info.title;
+            document.getElementById('heroSubtitle').innerText = info.sub;
+            imgEl.style.opacity = '1';
+        }, 300);
+
         filterProducts();
     }
 
@@ -379,7 +445,6 @@
         const imgPath = p.imageUrl || 'https://via.placeholder.com/300x200';
         const stats = getRandomStats();
 
-        // Tambahkan inline style animation-delay
         return `
             <div class="card" style="animation: fadeIn 0.6s ease forwards; animation-delay: ${index * 0.05}s; opacity: 0;">
                 <img src="${imgPath}" alt="${p.name}">
