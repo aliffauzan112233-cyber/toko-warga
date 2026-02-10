@@ -582,12 +582,42 @@
     }
 
     function checkout() {
-        const name = document.getElementById('cName').value;
-        const addr = document.getElementById('cAddr').value;
-        if (!name || !addr || cart.length === 0) return alert("Mohon isi nama dan alamat pengiriman.");
-        let text = cart.map(i => `- ${i.name} (${i.quantity}x)`).join('%0A');
-        window.open(`https://wa.me/6282326793436?text=Halo%20TjStore,%20Saya%20mau%20order:%0A${text}%0A%0ATotal:%20${document.getElementById('grandTotal').innerText}%0ANama:%20${name}%0AAlamat:%20${addr}`);
+    const name = document.getElementById('cName').value;
+    const addr = document.getElementById('cAddr').value;
+    
+    if (!name || !addr) {
+        return alert("Mohon lengkapi Nama dan Alamat pengiriman.");
     }
+    if (cart.length === 0) {
+        return alert("Keranjang belanja masih kosong.");
+    }
+
+    // Header Pesanan
+    let message = `*PESANAN BARU - TJSTORE*%0A`;
+    message += `-------------------------------------------%0A`;
+    message += `*Nama:* ${name}%0A`;
+    message += `*Alamat:* ${addr}%0A`;
+    message += `-------------------------------------------%0A%0A`;
+    message += `*DAFTAR BELANJA:*%0A`;
+
+    // Daftar Produk
+    cart.forEach((item, index) => {
+        const subtotal = item.price * item.quantity;
+        message += `${index + 1}. *${item.name}*%0A`;
+        message += `   catatan: ${item.quantity} x Rp ${Number(item.price).toLocaleString('id-ID')}%0A`;
+    });
+
+    // Footer Total
+    const totalHarga = document.getElementById('grandTotal').innerText;
+    message += `%0A-------------------------------------------%0A`;
+    message += `*TOTAL PEMBAYARAN: ${totalHarga}*%0A`;
+    message += `-------------------------------------------%0A%0A`;
+    message += `_Mohon segera diproses ya, Kak. Terima kasih!_`;
+
+    // Buka WhatsApp
+    const phone = "6282326793436";
+    window.open(`https://wa.me/${phone}?text=${message}`);
+}
 
     loadProducts();
 </script>
