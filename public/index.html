@@ -294,13 +294,13 @@
         <div class="search-section">
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="searchInput" placeholder="Cari produk favoritmu..." onkeyup="filterProducts()">
+                <input type="text" id="searchInput" placeholder="Find your favorite products..." onkeyup="filterProducts()">
             </div>
             <div class="category-pills">
-                <div class="pill active" onclick="setCategory('all', this)">Semua</div>
-                <div class="pill" onclick="setCategory('makanan', this)">Makanan</div>
-                <div class="pill" onclick="setCategory('minuman', this)">Minuman</div>
-                <div class="pill" onclick="setCategory('pakaian', this)">Pakaian</div>
+                <div class="pill active" onclick="setCategory('all', this)">All</div>
+                <div class="pill" onclick="setCategory('makanan', this)">Food</div>
+                <div class="pill" onclick="setCategory('minuman', this)">Drink</div>
+                <div class="pill" onclick="setCategory('pakaian', this)">Clothes</div>
             </div>
         </div>
 
@@ -319,41 +319,41 @@
         <img id="heroImage" src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1500&q=80" alt="Banner">
         <div class="hero-overlay">
             <div>
-                <h1 id="heroTitle" style="font-size: 2.5rem; font-weight: 800;">Selamat Datang di TjStore</h1>
-                <p id="heroSubtitle">Temukan koleksi produk premium terbaik kami.</p>
+                <h1 id="heroTitle" style="font-size: 2.5rem; font-weight: 800;">Welcome to TjStore</h1>
+                <p id="heroSubtitle">Discover our best collection of premium products.</p>
             </div>
         </div>
     </div>
 
     <div class="container">
         <div class="section-header">
-            <h2 id="categoryTitle">Semua Produk</h2>
-            <p id="productCountText" style="color: var(--text-dim);">Menampilkan koleksi eksklusif TjStore.</p>
+            <h2 id="categoryTitle">All Products</h2>
+            <p id="productCountText" style="color: var(--text-dim);">Showcasing exclusive collections TjStore.</p>
         </div>
-        <div id="products" class="product-grid">Memuat katalog...</div>
+        <div id="products" class="product-grid">Loading catalog...</div>
     </div>
 
     <div id="cartOverlay" class="modal-overlay" onclick="closeCart(event)">
         <div class="cart-modal" onclick="event.stopPropagation()">
             <div class="cart-header">
                 <div>
-                    <h3 style="font-weight: 800;">Keranjang Saya</h3>
-                    <p style="font-size: 0.8rem; color: var(--text-dim);">Detail belanjaan anda</p>
+                    <h3 style="font-weight: 800;">My Cart</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-dim);">Your shopping details</p>
                 </div>
                 <button onclick="toggleCart()" style="background:var(--primary-soft); border:none; width:35px; height:35px; border-radius:10px; color:var(--primary); cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="cartList" class="cart-list"></div>
             <div class="cart-footer">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                    <span style="font-weight: 600; color: var(--text-dim);">Total Pembayaran</span>
+                    <span style="font-weight: 600; color: var(--text-dim);">Total payment</span>
                     <span id="grandTotal" style="color: var(--primary); font-weight: 800; font-size: 1.4rem;">Rp 0</span>
                 </div>
                 <div style="background: #f8fafc; padding: 12px; border-radius: 15px; margin-bottom: 15px; border: 1px solid var(--border);">
-                    <input type="text" id="cName" placeholder="Nama Lengkap" style="width:100%; padding:10px; border:none; border-bottom: 1px solid var(--border); outline:none; background:transparent;">
-                    <textarea id="cAddr" placeholder="Alamat Pengiriman" style="width:100%; padding:10px; border:none; outline:none; resize:none; height: 50px; background:transparent;"></textarea>
+                    <input type="text" id="cName" placeholder="Full name" style="width:100%; padding:10px; border:none; border-bottom: 1px solid var(--border); outline:none; background:transparent;">
+                    <textarea id="cAddr" placeholder="Return address" style="width:100%; padding:10px; border:none; outline:none; resize:none; height: 50px; background:transparent;"></textarea>
                 </div>
                 <button onclick="checkout()" class="btn-checkout">
-                    <i class="fa-brands fa-whatsapp"></i> KIRIM PESANAN (WA)
+                    <i class="fa-brands fa-whatsapp"></i> SEND ORDER (WA)
                 </button>
             </div>
         </div>
@@ -371,22 +371,22 @@
         all: {
             img: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1500&q=80",
             title: "TjStore Premium",
-            sub: "Pusat perbelanjaan online terpercaya dan berkualitas."
+            sub: "Trusted and quality online shopping center"
         },
         makanan: {
             img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1500&q=80",
-            title: "Kuliner Lezat",
-            sub: "Nikmati berbagai hidangan makanan pilihan dengan rasa otentik."
+            title: "Delicious culinary",
+            sub: "Enjoy a variety of selected food dishes with authentic flavors"
         },
         minuman: {
             img: "https://i.pinimg.com/736x/91/9f/f7/919ff7db824eb513fc8bee05259fff1d.jpg",
-            title: "Segarkan Harimu",
-            sub: "Koleksi minuman segar dan sehat untuk menemani aktivitasmu."
+            title: "Refresh Your Day",
+            sub: "A collection of fresh and healthy drinks to accompany your activities"
         },
         pakaian: {
             img: "https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=1500&q=80",
             title: "Fashion Terkini",
-            sub: "Tampil percaya diri dengan gaya pakaian modern dan material premium."
+            sub: "Appear confident with modern clothing styles and premium material"
         }
     };
 
@@ -409,7 +409,7 @@
             displayProducts(allProducts);
             updateUI();
         } catch (err) {
-            document.getElementById('products').innerHTML = "Gagal memuat katalog.";
+            document.getElementById('products').innerHTML = "Filed to load catalog";
         }
     }
 
@@ -447,7 +447,7 @@
     function displayProducts(products) {
     const container = document.getElementById('products');
     if (!products || products.length === 0) {
-        container.innerHTML = `<p>Produk tidak ditemukan.</p>`;
+        container.innerHTML = `<p>Product not found</p>`;
         return;
     }
 
@@ -469,9 +469,9 @@
                             <div class="stars"><i class="fa-solid fa-star"></i></div>
                         </div>
                         <div style="border-right: 1px solid var(--border); padding-right: 8px;">
-                            <b>${stats.reviews}</b> Penilaian
+                            <b>${stats.reviews}</b> Evaluation
                         </div>
-                        <div><b>${stats.sold}</b> Terjual</div>
+                        <div><b>${stats.sold}</b> Sold</div>
                     </div>
                     <span class="price">Rp ${Number(p.price).toLocaleString('id-ID')}</span>
                     <button class="btn-add" onclick="animateAddToCart(event, ${p.id})">
@@ -586,19 +586,19 @@
     const addr = document.getElementById('cAddr').value;
     
     if (!name || !addr) {
-        return alert("Mohon lengkapi Nama dan Alamat pengiriman.");
+        return alert("Please complete your Name and Shipping Address.");
     }
     if (cart.length === 0) {
-        return alert("Keranjang belanja masih kosong.");
+        return alert("Shopping cart is still empty.");
     }
 
     // Header Pesanan
-    let message = `*PESANAN BARU - TJSTORE*%0A`;
+    let message = `*NEW ORDER - TJSTORE*%0A`;
     message += `-------------------------------------------%0A`;
-    message += `*Nama:* ${name}%0A`;
-    message += `*Alamat:* ${addr}%0A`;
+    message += `*Name:* ${name}%0A`;
+    message += `*Addres:* ${addr}%0A`;
     message += `-------------------------------------------%0A%0A`;
-    message += `*DAFTAR BELANJA:*%0A`;
+    message += `*SHOPPING LIST:*%0A`;
 
     // Daftar Produk
     cart.forEach((item, index) => {
@@ -610,9 +610,9 @@
     // Footer Total
     const totalHarga = document.getElementById('grandTotal').innerText;
     message += `%0A-------------------------------------------%0A`;
-    message += `*TOTAL PEMBAYARAN: ${totalHarga}*%0A`;
+    message += `*TOTAL PAYMENT: ${totalHarga}*%0A`;
     message += `-------------------------------------------%0A%0A`;
-    message += `_Mohon segera diproses ya, Kak. Terima kasih!_`;
+    message += `_Please process it immediately, Sis. Thank you.!_`;
 
     // Buka WhatsApp
     const phone = "6282326793436";

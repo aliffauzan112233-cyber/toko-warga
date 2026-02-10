@@ -231,7 +231,7 @@
 
     <div id="toast">
         <i class="fa-solid fa-circle-exclamation" style="color: #60a5fa;"></i>
-        <span id="toastMsg">Pesan Error</span>
+        <span id="toastMsg">Error Message</span>
     </div>
 
     <div class="login-container">
@@ -242,7 +242,7 @@
             
             <div class="header-section">
                 <h1 class="brand-name">Tj<span>Store</span> Login</h1>
-                <p class="subtitle">Akses akun admin untuk mengelola katalog</p>
+                <p class="subtitle">Admin account access to manage catalog</p>
             </div>
 
             <form id="loginForm">
@@ -264,12 +264,12 @@
                 </div>
 
                 <button type="submit" id="loginBtn">
-                    MASUK SEKARANG <i class="fa-solid fa-arrow-right"></i>
+                SIGN IN NOW <i class="fa-solid fa-arrow-right"></i>
                 </button>
             </form>
 
             <div class="footer-links">
-                Belum punya akun? <a href="register.html">Daftar Akun</a>
+                Don't have an account yet? <a href="register.html">Create an Account</a>
             </div>
         </div>
     </div>
@@ -301,7 +301,7 @@
             const originalText = btn.innerHTML;
             
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> MEMVERIFIKASI...';
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> VERIFY...';
 
             try {
                 // Simulasi network delay
@@ -321,10 +321,10 @@
                     localStorage.setItem('token', data.token);
                     window.location.href = 'admin.html';
                 } else {
-                    showToast(data.message || "Akses ditolak. Cek kembali data Anda.");
+                    showToast(data.message || "Access denied! Please double check your data.");
                 }
             } catch (err) {
-                showToast("Gagal terhubung ke server");
+                showToast("Failed to connect to server");
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalText;

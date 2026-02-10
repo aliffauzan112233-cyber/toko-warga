@@ -243,14 +243,14 @@
     <div class="admin-container">
         <div class="admin-card">
             <div class="header-section">
-                <h1 class="brand-name">Tj<span>Store</span> Inventory</h1>
-                <p class="subtitle">Manajemen stok dan publikasi produk baru ke katalog</p>
+                <h1 class="brand-name">Tj<span>Store</span> Admin</h1>
+                <p class="subtitle">Stock management and publication of new products to the catalog</p>
             </div>
 
             <form id="productForm">
                 <div class="form-grid">
                     <div class="input-group full-width">
-                        <label class="input-label">Nama Produk</label>
+                        <label class="input-label">Name Produk</label>
                         <div class="input-box">
                             <i class="fa-solid fa-box-open"></i>
                             <input type="text" id="name" placeholder="Nama barang yang akan dijual" required>
@@ -258,7 +258,7 @@
                     </div>
 
                     <div class="input-group">
-                        <label class="input-label">Harga (IDR)</label>
+                        <label class="input-label">price (IDR)</label>
                         <div class="input-box">
                             <i class="fa-solid fa-tag"></i>
                             <input type="number" id="price" placeholder="Contoh: 50000" required>
@@ -266,7 +266,7 @@
                     </div>
 
                     <div class="input-group">
-                        <label class="input-label">Stok Tersedia</label>
+                        <label class="input-label">Stock Available</label>
                         <div class="input-box">
                             <i class="fa-solid fa-cubes"></i>
                             <input type="number" id="stock" placeholder="Jumlah unit" required>
@@ -274,14 +274,14 @@
                     </div>
 
                 <div class="input-group full-width">
-    <label class="input-label">Kategori Produk</label>
+    <label class="input-label">Product Categories</label>
     <div class="input-box">
         <i class="fa-solid fa-layer-group"></i>
         <select id="category" required>
-    <option value="">-- Pilih Kategori --</option>
-    <option value="1">🍔 Makanan</option>
-    <option value="2">🥤 Minuman</option>
-    <option value="3">👕 Pakaian</option>
+    <option value="">-- Select Category --</option>
+    <option value="1">🍔 Food</option>
+    <option value="2">🥤 Drink</option>
+    <option value="3">👕 Clothes</option>
         </select>
 
     </div>
@@ -303,7 +303,7 @@
             </form>
 
             <a href="index.html" class="view-store">
-                <i class="fa-solid fa-arrow-left"></i> Kembali ke Dashboard Utama
+                <i class="fa-solid fa-arrow-left"></i> Back to Main Dashboard
             </a>
         </div>
     </div>
@@ -378,12 +378,12 @@
                 const data = await res.json();
                 
                 if(data.success) {
-                    showToast("Produk berhasil tayang di katalog!");
+                    showToast("Product successfully displayed in catalog!");
                     document.getElementById('productForm').reset();
                     imagePreview.style.display = 'none';
-                    fileStatus.innerText = "Klik untuk pilih gambar";
+                    fileStatus.innerText = "Click to select image";
                 } else {
-                    showToast("Gagal: " + data.message, true);
+                    showToast("Fail: " + data.message, true);
                 }
             } catch (err) {
                 showToast("Error: Koneksi ke server terputus", true);
