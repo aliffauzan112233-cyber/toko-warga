@@ -388,27 +388,36 @@
     }
 
     // PERBAIKAN: Fungsi Tambah/Kurang yang bekerja dengan ID dan Size
-    function changeQty(id, size, delta) {
-        // Mengubah string 'null' kembali ke nilai null asli jika perlu
-        const searchSize = (size === 'null' || size === '') ? null : size;
-        const item = cart.find(c => c.productId === id && c.size === searchSize);
-        
-        if (item) {
-            item.quantity += delta;
-            if (item.quantity <= 0) {
-                removeProduct(id, size);
-            } else {
-                saveCart();
-            }
-        }
-    }
+   function changeQty(id, size, delta) {
+    const realSize = (size === "" || size === "null" || size === null) ? null : size;
 
-    // PERBAIKAN: Fungsi Hapus Produk
-    function removeProduct(id, size) {
-        const searchSize = (size === 'null' || size === '') ? null : size;
-        cart = cart.filter(c => !(c.productId === id && c.size === searchSize));
+    const item = cart.find(c =>
+        c.productId === id && c.size === realSize
+    );
+
+    if (!item) return;
+
+    item.quantity += delta;
+
+    if (item.quantity <= 0) {
+        removeProduct(id, size);
+    } else {
         saveCart();
     }
+}
+
+
+    // PERBAIKAN: Fungsi Hapus Produk
+   function removeProduct(id, size) {
+    const realSize = (size === "" || size === "null" || size === null) ? null : size;
+
+    cart = cart.filter(c =>
+        !(c.productId === id && c.size === realSize)
+    );
+
+    saveCart();
+}
+
 
     function saveCart() {
         localStorage.setItem('tj_cart', JSON.stringify(cart));
@@ -422,39 +431,45 @@
     }
 
     function renderCart() {
-        const list = document.getElementById('cartList');
-        let total = 0;
-        
-        if (cart.length === 0) {
-            list.innerHTML = '<p style="text-align:center; padding:20px; color:var(--text-dim)">Keranjang anda kosong</p>';
-            document.getElementById('grandTotal').innerText = "Rp 0";
-            return;
-        }
+    const list = document.getElementById('cartList');
+    let total = 0;
 
-        list.innerHTML = cart.map(item => {
-            total += item.price * item.quantity;
-            // Gunakan quotes untuk parameter string (size) di dalam onclick
-            const sizeParam = item.size ? `'${item.size}'` : 'null';
-            
-            return `
-                <div class="cart-item">
-                    <div class="cart-item-info">
-                        <b>${item.name}</b>
-                        <small>Rp ${Number(item.price).toLocaleString('id-ID')}</small>
-                    </div>
-                    <div class="qty-ctrl">
-                        <button onclick="changeQty(${item.productId}, ${sizeParam}, -1)">-</button>
-                        <span>${item.quantity}</span>
-                        <button onclick="changeQty(${item.productId}, ${sizeParam}, 1)">+</button>
-                    </div>
-                    <button class="btn-del" onclick="removeProduct(${item.productId}, ${sizeParam})">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                </div>`;
-        }).join('');
-        
-        document.getElementById('grandTotal').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+    if (cart.length === 0) {
+        list.innerHTML = '<p style="text-align:center; padding:20px; color:var(--text-dim)">Keranjang anda kosong</p>';
+        document.getElementById('grandTotal').innerText = "Rp 0";
+        return;
     }
+
+    list.innerHTML = cart.map(item => {
+        total += item.price * item.quantity;
+
+        // selalu kirim string agar aman di hosting
+        const safeSize = item.size ? item.size : "";
+
+        return `
+        <div class="cart-item">
+            <div class="cart-item-info">
+                <b>${item.name}</b>
+                <small>Rp ${Number(item.price).toLocaleString('id-ID')}</small>
+            </div>
+
+            <div class="qty-ctrl">
+                <button onclick="changeQty(${item.productId}, '${safeSize}', -1)">-</button>
+                <span>${item.quantity}</span>
+                <button onclick="changeQty(${item.productId}, '${safeSize}', 1)">+</button>
+            </div>
+
+            <button class="btn-del" onclick="removeProduct(${item.productId}, '${safeSize}')">
+                <i class="fa-solid fa-trash-can"></i>
+            </button>
+        </div>
+        `;
+    }).join('');
+
+    document.getElementById('grandTotal').innerText =
+        `Rp ${total.toLocaleString('id-ID')}`;
+}
+
 
     function toggleCart() {
         const overlay = document.getElementById('cartOverlay');
