@@ -12,7 +12,9 @@ import { createClient } from '@supabase/supabase-js';
 import { serveStatic } from '@hono/node-server/serve-static';
 
 // Load ENV
-process.loadEnvFile();
+if (process.env.NODE_ENV !== 'production') {
+    process.loadEnvFile();
+}
 
 // Setup koneksi
 const client = postgres(process.env.DATABASE_URL);
