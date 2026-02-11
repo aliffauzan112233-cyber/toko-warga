@@ -499,7 +499,8 @@
 
     function logout() {
         document.getElementById('logoutLoading').style.display = 'flex';
-        setTimeout(() => { localStorage.clear(); window.location.reload(); }, 1500);
+        // setTimeout(() => { localStorage.clear(); window.location.reload(); }, 1500);
+        window.location.href = './login.html'
     }
 
     function checkout() {
