@@ -321,7 +321,9 @@
         sizeArea.style.display = (p.categoryId == "3") ? 'block' : 'none';
 
         document.getElementById('modalAddBtn').onclick = (e) => {
-            animateFlyToCart(e, p.id, (p.categoryId == "3" ? selectedSize : null));
+            // Jika kategori pakaian (3), kirim selectedSize, jika tidak kirim null
+            const sizeToSend = (p.categoryId == "3" ? selectedSize : null);
+            animateFlyToCart(e, p.id, sizeToSend);
         };
 
         const overlay = document.getElementById('detailOverlay');
@@ -366,8 +368,9 @@
 
     function addToCart(id, size = null) {
         const product = allProducts.find(p => p.id === id);
+        if(!product) return;
+
         const displayName = size ? `${product.name} (${size})` : product.name;
-        
         const inCart = cart.find(c => c.productId === id && c.size === size);
         
         if (inCart) {
@@ -383,6 +386,88 @@
         }
         saveCart();
     }
+
+    // PERBAIKAN: Fungsi Tambah/Kurang yang bekerja dengan ID dan Size
+    function changeQty(id, size, delta) {
+        // Mengubah string 'null' kembali ke nilai null asli jika perlu
+        const searchSize = (size === 'null' || size === '') ? null : size;
+        const item = cart.find(c => c.productId === id && c.size === searchSize);
+        
+        if (item) {
+            item.quantity += delta;
+            if (item.quantity <= 0) {
+                removeProduct(id, size);
+            } else {
+                saveCart();
+            }
+        }
+    }
+
+    // PERBAIKAN: Fungsi Hapus Produk
+    function removeProduct(id, size) {
+        const searchSize = (size === 'null' || size === '') ? null : size;
+        cart = cart.filter(c => !(c.productId === id && c.size === searchSize));
+        saveCart();
+    }
+
+    function saveCart() {
+        localStorage.setItem('tj_cart', JSON.stringify(cart));
+        updateUI();
+    }
+
+    function updateUI() {
+        const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
+        document.getElementById('count').innerText = totalItems;
+        renderCart();
+    }
+
+    function renderCart() {
+        const list = document.getElementById('cartList');
+        let total = 0;
+        
+        if (cart.length === 0) {
+            list.innerHTML = '<p style="text-align:center; padding:20px; color:var(--text-dim)">Keranjang anda kosong</p>';
+            document.getElementById('grandTotal').innerText = "Rp 0";
+            return;
+        }
+
+        list.innerHTML = cart.map(item => {
+            total += item.price * item.quantity;
+            // Gunakan quotes untuk parameter string (size) di dalam onclick
+            const sizeParam = item.size ? `'${item.size}'` : 'null';
+            
+            return `
+                <div class="cart-item">
+                    <div class="cart-item-info">
+                        <b>${item.name}</b>
+                        <small>Rp ${Number(item.price).toLocaleString('id-ID')}</small>
+                    </div>
+                    <div class="qty-ctrl">
+                        <button onclick="changeQty(${item.productId}, ${sizeParam}, -1)">-</button>
+                        <span>${item.quantity}</span>
+                        <button onclick="changeQty(${item.productId}, ${sizeParam}, 1)">+</button>
+                    </div>
+                    <button class="btn-del" onclick="removeProduct(${item.productId}, ${sizeParam})">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>`;
+        }).join('');
+        
+        document.getElementById('grandTotal').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+    }
+
+    function toggleCart() {
+        const overlay = document.getElementById('cartOverlay');
+        if (overlay.style.display === 'flex') {
+            overlay.classList.remove('active');
+            setTimeout(() => { overlay.style.display = 'none'; }, 300);
+        } else {
+            overlay.style.display = 'flex';
+            setTimeout(() => { overlay.classList.add('active'); }, 10);
+        }
+    }
+
+    function closeCart(e) { if(e.target.id === 'cartOverlay') toggleCart(); }
 
     function closeModal(id, e) {
         if(e.target.id === id) {
@@ -421,72 +506,6 @@
         });
         displayProducts(filtered);
     }
-
-    function changeQty(id, size, delta) {
-        const item = cart.find(c => c.productId === id && c.size === size);
-        if (item) {
-            item.quantity += delta;
-            if (item.quantity <= 0) removeProduct(id, size);
-        }
-        saveCart();
-    }
-
-    function removeProduct(id, size) {
-        cart = cart.filter(c => !(c.productId === id && c.size === size));
-        saveCart();
-    }
-
-    function saveCart() {
-        localStorage.setItem('tj_cart', JSON.stringify(cart));
-        updateUI();
-    }
-
-    function updateUI() {
-        document.getElementById('count').innerText = cart.reduce((s, i) => s + i.quantity, 0);
-        renderCart();
-    }
-
-    function renderCart() {
-        const list = document.getElementById('cartList');
-        let total = 0;
-        if (cart.length === 0) {
-            list.innerHTML = '<p style="text-align:center; padding:20px; color:var(--text-dim)">Keranjang anda kosong</p>';
-            document.getElementById('grandTotal').innerText = "Rp 0";
-            return;
-        }
-        list.innerHTML = cart.map(item => {
-            total += item.price * item.quantity;
-            return `
-                <div class="cart-item">
-                    <div class="cart-item-info">
-                        <b>${item.name}</b>
-                        <small>Rp ${Number(item.price).toLocaleString('id-ID')}</small>
-                    </div>
-                    <div class="qty-ctrl">
-                        <button onclick="changeQty(${item.productId}, '${item.size}', -1)">-</button>
-                        <span>${item.quantity}</span>
-                        <button onclick="changeQty(${item.productId}, '${item.size}', 1)">+</button>
-                    </div>
-                    <button class="btn-del" onclick="removeProduct(${item.productId}, '${item.size}')">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                </div>`;
-        }).join('');
-        document.getElementById('grandTotal').innerText = `Rp ${total.toLocaleString('id-ID')}`;
-    }
-
-    function toggleCart() {
-        const overlay = document.getElementById('cartOverlay');
-        if (overlay.style.display === 'flex') {
-            overlay.classList.remove('active');
-            setTimeout(() => { overlay.style.display = 'none'; }, 300);
-        } else {
-            overlay.style.display = 'flex';
-            setTimeout(() => { overlay.classList.add('active'); }, 10);
-        }
-    }
-
-    function closeCart(e) { if(e.target.id === 'cartOverlay') toggleCart(); }
 
     function checkout() {
         const name = document.getElementById('cName').value;
